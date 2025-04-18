@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Image from 'next/image';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale } from 'chart.js';
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale);
@@ -10,7 +11,7 @@ export default function Home() {
   const [speed, setSpeed] = useState(50);
   const [clutchType, setClutchType] = useState('single');
   const [graphData, setGraphData] = useState([]);
-  const [isGraphStopped, setIsGraphStopped] = useState(false); // State to control graph stopping
+  const [isGraphStopped, setIsGraphStopped] = useState(false);
 
   useEffect(() => {
     if (isEngaging && clutchPosition < 100 && !isGraphStopped) {
@@ -23,28 +24,23 @@ export default function Home() {
       }, 100);
       return () => clearInterval(interval);
     }
-  }, [isEngaging, speed, isGraphStopped]); // Added `isGraphStopped` to the dependency array
+  }, [isEngaging, speed, isGraphStopped, clutchPosition]);
 
   const simulateClutchEngagement = () => {
     setIsEngaging(true);
     setGraphData([]);
-    setIsGraphStopped(false); // Ensure the graph can start again
+    setIsGraphStopped(false);
   };
 
   const resetSimulation = () => {
     setIsEngaging(false);
     setClutchPosition(0);
     setGraphData([]);
-    setIsGraphStopped(false); // Ensure graph resets completely
+    setIsGraphStopped(false);
   };
 
-  const handleStop = () => {
-    setIsGraphStopped(true); // Stop the graph by updating the state
-  };
-
-  const handleResume = () => {
-    setIsGraphStopped(false); // Resume the graph by updating the state
-  };
+  const handleStop = () => setIsGraphStopped(true);
+  const handleResume = () => setIsGraphStopped(false);
 
   const chartData = {
     labels: graphData.map((_, i) => i),
@@ -69,13 +65,11 @@ export default function Home() {
       </Head>
 
       <div className="main-container">
-        {/* HEADER */}
         <header className="header">
           <h1 className="title">Clutch Simulator App</h1>
           <p className="subtitle">Understand, simulate, and visualize clutch behavior in real time</p>
         </header>
 
-        {/* THEORY SECTION */}
         <section className="theory-section">
           <h2 className="theory-heading">Understanding the Clutch</h2>
           <p className="theory-description">
@@ -90,7 +84,6 @@ export default function Home() {
           </ul>
         </section>
 
-        {/* CONTROLS SECTION */}
         <section className="controls-section">
           <div className="why-engage-clutch">
             <h3>Why Do We Engage the Clutch?</h3>
@@ -143,57 +136,57 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="graph-section">
+          <div className="graph-box-container">
+            <div className="graph-header">
+              <h2>Clutch Engagement Graph</h2>
+              <p>
+                This graph displays the clutch engagement percentage over time. 
+                As the clutch engages, the line rises — demonstrating a smoother power transfer from the engine to the wheels. 
+                It&apos;s useful for analyzing driver behavior, clutch efficiency, and overall gear engagement performance.
+              </p>
+              <ul className="graph-reasons">
+                <li>✰Helps visualize how the clutch engages and disengages over time.</li>
+                <li>✰Indicates the smoothness of power transfer between the engine and wheels.</li>
+                <li>✰Useful for analyzing driving patterns, including gear changes and engagement speed.</li>
+                <li>✰Assists in evaluating clutch performance and overall drivetrain efficiency.</li>
+                <li>✰Can be used to optimize driving behavior and improve vehicle control.</li>
+              </ul>
+            </div>
 
-{/* GRAPH SECTION */}
-<section className="graph-section">
-  <div className="graph-box-container">
-    <div className="graph-header">
-      <h2>Clutch Engagement Graph</h2>
-      <p>
-        This graph displays the clutch engagement percentage over time. 
-        As the clutch engages, the line rises — demonstrating a smoother power transfer from the engine to the wheels. 
-        It's useful for analyzing driver behavior, clutch efficiency, and overall gear engagement performance.
-      </p>
-      <ul className="graph-reasons">
-        <li>✰Helps visualize how the clutch engages and disengages over time.</li>
-        <li>✰Indicates the smoothness of power transfer between the engine and wheels.</li>
-        <li>✰Useful for analyzing driving patterns, including gear changes and engagement speed.</li>
-        <li>✰Assists in evaluating clutch performance and overall drivetrain efficiency.</li>
-        <li>✰Can be used to optimize driving behavior and improve vehicle control.</li>
-      </ul>
-    </div>
+            <div className="graph-container">
+              <Line data={chartData} />
+            </div>
 
-    <div className="graph-container">
-      <Line data={chartData} />
-    </div>
+            <div className="graph-button-container">
+              <button className="animated-stop-button" onClick={handleStop}>
+                Stop Graph
+              </button>
+              <button className="animated-resume-button" onClick={handleResume}>
+                Resume Graph
+              </button>
+            </div> 
+          </div>
+        </section>
 
-    {/* Updated Button Section */}
-    <div className="graph-button-container">
-      <button className="animated-stop-button" onClick={handleStop}>
-        Stop Graph
-      </button>
-      <button className="animated-resume-button" onClick={handleResume}>
-        Resume Graph
-      </button>
-    </div> 
-  </div>
-</section>
-
-
-{/* FOOTER */}
-<footer className="custom-footer">
-  <p className="footer-text">
-    Made by <strong>Bilal Waseem</strong>
-  </p>
-  <a
-    href="https://www.linkedin.com/in/bilal-waseem-b44006338"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <img src="/likindenlogo.png" alt="LinkedIn" className="linkedin-glow" />
-  </a>
-</footer>
-
+        <footer className="custom-footer">
+          <p className="footer-text">
+            Made by <strong>Bilal Waseem</strong>
+          </p>
+          <a
+            href="https://www.linkedin.com/in/bilal-waseem-b44006338"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="/likindenlogo.png"
+              alt="LinkedIn"
+              width={28}
+              height={28}
+              className="linkedin-glow"
+            />
+          </a>
+        </footer>
       </div>
     </>
   );
